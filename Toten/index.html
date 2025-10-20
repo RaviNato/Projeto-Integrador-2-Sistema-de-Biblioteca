@@ -1,0 +1,44 @@
+<!-- 08/09 -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Configurações -->
+        
+        <link rel="stylesheet" href="styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <!-- Dropdown de redirecionamento -->
+        
+        <select id="dropdown">
+            <option value="../Toten/index.html">Totem</option>
+            <option value="../Aluno/index.html">Aluno</option>
+            <option value="../Bibliotecario/index.html">Biblioteca</option>
+        </select>
+        
+        <main>
+            <!-- Forms para login -->
+            
+            <form id="form-biblioteca" action="/processa-formulario" method="POST">
+                <div class="input-group">
+                    <label for="ra">Registro do Aluno:</label>
+                    <input id="ra" name="ra" type="number" required placeholder="Digite seu RA">
+                </div>
+
+                <div class="input-group">
+                    <label for="codlivro">Cód. do Livro:</label>
+                    <input id="codlivro" name="codlivro" type="number" required placeholder="Digite o código do livro">
+                </div>
+
+                <div class="botoes">
+                    <button type="submit" name="acao" value="devolver">Devolver</button>
+                    <button type="submit" name="acao" value="retirar">Retirar</button>
+                </div>
+            </form>
+        </main>
+
+        <script src="script.js"></script>
+    </body>
+</html>

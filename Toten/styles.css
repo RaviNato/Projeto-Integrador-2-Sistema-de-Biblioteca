@@ -1,0 +1,180 @@
+/* Reset básico */
+body, html {
+    margin: 0; /* remove margens padrão do navegador */
+    padding: 0; /* remove espaçamentos internos padrão */
+    font-family: sans-serif; /* define fonte padrão sem serifa */
+    background-color: white; /* cor de fundo branca */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Barra superior */
+
+
+body::before {
+    content: ''; /* conteúdo vazio obrigatório para pseudo-elemento */
+    display: block; /* exibe o pseudo-elemento como bloco */
+    height: 60px; /* altura da barra superior */
+    background-color: #191e28; /* cor escura da barra superior */
+    width: 100%; /* ocupa 100% da largura da tela */
+    position: absolute; /* posiciona fora do fluxo normal */
+    top: 0; /* encosta no topo */
+    left: 0; /* encosta na esquerda */
+    z-index: -1; /* fica atrás dos outros elementos */
+}
+
+/* Estrela no canto superior esquerdo */
+body::after {
+    content: '★'; /* insere uma estrela */
+    color: #facc15; /* cor amarela brilhante */
+    font-size: 50px; /* tamanho grande para a estrela */
+    position: absolute; /* posicionamento fora do fluxo */
+    top: -8px; /* sobe 8px acima do topo */
+    left: 10px; /* distância de 10px da borda esquerda */
+    transform: rotate(15deg); /* rotaciona a estrela 15 graus no sentido horário */
+}
+
+/* Título no topo direito */
+#dropdown {
+    border: none; /* remove a borda padrão do select */
+    outline: none; /* remove o contorno ao focar (acessibilidade) */
+    position: absolute; /* posicionamento fora do fluxo */
+    top: 18px; /* 18px do topo da página */
+    right: 15px; /* 15px da borda direita */
+    background-color: #191e28; /* cor de fundo igual à da barra */
+    color: white; /* texto branco */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+    font-size: 18px; /* tamanho do texto */
+    text-decoration: underline; /* sublinha o texto */
+    text-align: right; /* Alinha texto à direita */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Centralizar formulário */
+
+main {
+    display: flex; /* ativa o flexbox */
+    justify-content: center; /* centraliza o conteúdo horizontalmente */
+    align-items: center; /* centraliza verticalmente */
+    min-height: 90vh; /* altura mínima de 90% da viewport */
+    margin-top: 60px; /* compensa a altura da barra superior */
+}
+
+form {
+    display: flex; /* ativa o flexbox */
+    flex-direction: column; /* empilha os elementos verticalmente */
+    gap: 80px; /* espaço vertical entre os grupos */
+    align-items: center; /* centraliza os grupos horizontalmente */
+}
+
+/* Agrupamento de input + label ou botões */
+.input-group, .botoes {
+    display: flex; /* ativa o flexbox */
+    flex-direction: row; /* organiza os elementos em linha (horizontal) */
+    align-items: center; /* alinha verticalmente os itens ao centro */
+    gap: 160px; /* distância horizontal entre label e input ou entre os botões */
+}
+
+.input-group label {
+    width: 375px; /* largura fixa para alinhar com botão "devolver" */
+    text-align: right; /* alinha o texto do label à direita */
+    font-size: 30px; /* tamanho grande para o rótulo */
+    font-weight: bold; /* texto em negrito */
+    /*margin-bottom: 10px;  espaçamento abaixo do rótulo (desativado) */
+    /*display: block; ocupa a linha inteira (desativado) */
+}
+
+.input-group input {
+    width: 375px; /* largura do campo de entrada */
+    height: 60px; /* altura do campo */
+    font-size: 20px; /* tamanho do texto digitado */
+    padding: 10px; /* espaço interno entre texto e borda */
+    border-radius: 8px; /* cantos arredondados */
+    border: 1px solid black; /* borda preta com 1px */
+    box-sizing: border-box; /* inclui padding e borda no cálculo da largura/altura */
+}
+
+
+/* Botões */
+
+form button {
+    width: 160px; /* largura do botão */
+    height: 60px; /* altura do botão */
+    font-size: 18px; /* tamanho do texto */
+    /*border-radius: 2px;*/ /* cantos levemente arredondados (desativado) */
+    cursor: pointer; /* transforma cursor em mãozinha ao passar */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+    margin-top: 30px; /* espaço acima dos botões */
+    justify-content: center; /* centraliza conteúdo do botão (não tem efeito aqui) */
+}
+
+/* Botão de devolver */
+button[value="devolver"] {
+    background-color: white; /* fundo branco */
+    border: 1px solid black; /* borda preta */
+    color: black; /* texto preto */
+    /*margin-right: 20px;*/ /* espaço entre os botões (desativado) */
+}
+
+/* Botão de retirar */
+button[value="retirar"] {
+    background-color: #191e28; /* fundo escuro */
+    color: white; /* texto branco */
+    border: none; /* sem borda */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Mensagem de sucesso
+
+
+.success-message {
+    margin-top: 30px;             espaçamento acima da mensagem
+    background-color: #047857;    fundo verde escuro
+    color: white;                 texto branco
+    padding: 15px 30px;           espaço interno vertical e horizontal
+    text-align: center;           centraliza o texto
+    font-family: 'Courier New', monospace; fonte monoespaçada
+    font-size: 16px;              tamanho do texto
+    border-radius: 2px;           cantos levemente arredondados
+}
+*/
