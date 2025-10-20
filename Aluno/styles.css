@@ -1,0 +1,387 @@
+/* Reset básico para remover margens e espaçamentos padrão do navegador */
+body, html {
+    margin: 0; /* Remove as margens padrão do navegador */
+    padding: 0; /* Remove o padding padrão do navegador */
+    font-family: sans-serif; /* Define fonte padrão sem serifa */
+    background-color: white; /* Define cor de fundo branca */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Barra superior usando pseudo-elemento para criar faixa fixa no topo */
+
+
+body::before {
+    content: ''; /* Conteúdo vazio necessário para o pseudo-elemento existir */
+    display: block; /* Exibe o elemento como bloco */
+    height: 60px; /* Altura da barra superior */
+    background-color: #191e28; /* Cor escura da barra superior */
+    width: 100%; /* Ocupa toda largura da tela */
+    position: fixed; /* Fixa o elemento na viewport */
+    top: 0; /* Posiciona no topo */
+    left: 0; /* Posiciona na esquerda */
+}
+
+/* Estrela no canto superior esquerdo usando pseudo-elemento */
+body::after {
+    content: '☆'; /* Insere uma estrela vazia */
+    color: #facc15; /* Cor amarela brilhante */
+    font-size: 50px; /* Tamanho grande da estrela */
+    position: fixed; /* Fixa na viewport */
+    top: -8px; /* Sobe 8px acima do topo */
+    left: 10px; /* Afasta 10px da borda esquerda */
+    transform: rotate(15deg); /* Rotaciona a estrela 15 graus */
+}
+/* Quando a classe "logado" for adicionada ao body, muda a estrela para preenchida */
+body.logado::after {
+    content: '★'; /* Estrela preenchida */
+}
+
+/* Estilização do dropdown no topo direito */
+#dropdown {
+    border: none; /* Remove borda padrão */
+    outline: none; /* Remove contorno ao focar */
+    position: fixed; /* Fixa o dropdown na viewport */
+    top: 18px; /* Distância do topo */
+    right: 15px; /* Distância da direita */
+    background-color: #191e28; /* Fundo igual à barra superior */
+    color: white; /* Texto branco */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+    font-size: 18px; /* Tamanho da fonte */
+    text-decoration: underline; /* Sublinha o texto */
+    text-align: right; /* Alinha texto à direita */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Sidebar fixa à esquerda */
+
+
+.sidebar {
+    width: 15%; /* Largura em percentual */
+    background: #191e28; /* Fundo escuro */
+    color: white; /* Texto branco */
+    height: 100%; /* Altura total da viewport */
+    position: fixed; /* Fixa na viewport */
+    display: flex; /* Usa flexbox */
+    flex-direction: column; /* Itens empilhados verticalmente */
+    padding-top: 60px; /* Espaço para barra superior (não ficar atrás) */
+}
+
+/* Botões dentro da sidebar */
+.sidebar button {
+    background: none; /* Fundo transparente */
+    border: 1px solid white; /* Borda branca */
+    color: white; /* Texto branco */
+    padding: 10px; /* Espaçamento interno */
+    text-align: center; /* Texto centralizado */
+    cursor: pointer; /* Cursor de botão ao passar o mouse */
+    font-size: 16px; /* Tamanho da fonte */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+}
+
+/* Botão ativo na sidebar com cores invertidas */
+.sidebar .active {
+    background: white; /* Fundo branco */
+    color: #191e28; /* Texto escuro */
+}
+
+/* Container para perfil dentro da sidebar */
+.sidebar .profile {
+    width: 100%; /* Largura total do container */
+    background: white; /* Fundo branco */
+    color: #191e28; /* Texto escuro */
+    height: 20%; /* Altura relativa */
+    position: relative; /* Posição relativa para elementos internos absolutos */
+    flex-direction: column; /* Itens empilhados verticalmente */
+    padding-top: 60px; /* Espaço para barra superior */
+    border: 1px solid #191e28; /* Borda escura */
+    display: flex; /* Flex container */
+    align-items: center; /* Alinha itens horizontalmente no centro */
+    gap: 30px; /* Espaço entre itens */
+}
+
+/* Botões dentro da área de perfil */
+.sidebar .profile button {
+    padding: 10px; /* Espaçamento interno */
+    cursor: pointer; /* Cursor pointer */
+    font-size: 14px; /* Fonte menor */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+    width: 60%; /* Largura em percentual */
+    margin-top: -5%; /* Margem superior negativa para subir um pouco */
+}
+
+/* Botão de login com fundo vermelho */
+.sidebar .profile #btnLogin {
+    background: #bd0a0a; /* Vermelho escuro */
+    color: white; /* Texto branco */
+}
+
+/* Botão de cadastro com fundo branco e borda escura */
+.sidebar .profile #btnCadastro {
+    background: white; /* Fundo branco */
+    color: #191e28; /* Texto escuro */
+    border: 1px solid #191e28; /* Borda escura */
+}
+
+/* Botão de logout pequeno e vermelho */
+.sidebar .profile #btnLogout {
+    background: #bd0a0a; /* Fundo vermelho */
+    color: white; /* Texto branco */
+    font-size: 10px; /* Fonte pequena */
+    width: 17px; /* Largura pequena */
+    padding: 3px; /* Padding reduzido */
+    margin-right: 10px; /* Margem direita */
+    margin-top: -50px; /* Margem superior negativa para posicionar */
+    align-self: flex-end; /* Alinha à direita */
+    border: none; /* Sem borda */
+}
+
+/* Estilo para imagens */
+img {
+    width: auto; /* Mantém proporção */
+    height: 90px; /* Altura fixa */
+    position: absolute; /* Posição absoluta */
+    bottom: 0; /* Posicionado na base do container */
+    margin: 90px; /* Margem geral */
+}
+
+/* Estilo para texto com id "aluno" dentro do perfil */
+.sidebar .profile #aluno {
+    font-family: 'IBM Plex Mono', monospace; /* Fonte monoespaçada */
+    font-weight: bold; /* Negrito */
+    position: absolute; /* Posicionado absoluto */
+    bottom: 0; /* Na base */
+    margin: 65px; /* Margem geral */
+}
+
+/* Estilo para texto com id "nota" dentro do perfil */
+.sidebar .profile #nota {
+    font-size: 35px; /* Fonte grande */
+    color: #305bab; /* Cor azul */
+    font-family: 'Caveat', cursive; /* Fonte cursiva */
+    font-weight: 900; /* Negrito pesado */
+    position: absolute; /* Posicionado absoluto */
+    bottom: 0; /* Na base */
+    margin: 10px; /* Sem margem */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Área principal da página */
+
+
+main {
+    margin-left: 18%; /* Espaço para sidebar */
+    margin-right: 2%; /* Margem direita */
+    padding-top: 90px; /* Espaço para barra superior */
+    background-color: transparent; /* Fundo transparente */
+}
+
+/* Barra de pesquisa com flexbox para alinhar itens */
+.search-bar {
+    display: flex; /* Flex container */
+}
+
+/* Input da barra de pesquisa */
+.search-bar input {
+    padding: 10px; /* Espaçamento interno */
+    flex: 1; /* Ocupa todo espaço disponível */
+    font-size: 16px; /* Tamanho da fonte */
+    border: 1px solid #191e28; /* Borda escura */
+    border-radius: 6px; /* Bordas arredondadas */
+}
+
+/* Botão da barra de pesquisa */
+.search-bar button {
+    padding: 10px 15px; /* Espaçamento interno */
+    font-size: 16px; /* Fonte */
+    border: 1px solid #191e28; /* Borda escura */
+    background-color: white; /* Fundo branco */
+    border-radius: 6px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor pointer */
+    right: 20px; /* Propriedade ignorada, pois não é posição relativa/fixa */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+}
+
+/* Tabela com largura total e bordas arredondadas */
+table {
+    width: 100%; /* Ocupa toda largura */
+    border: 1px solid #191e28; /* Borda escura */
+    border-radius: 6px; /* Cantos arredondados */
+    margin-top: 20px; /* Espaçamento acima */
+    font-family: 'IBM Plex Mono', monospace; /* Fonte monoespaçada */
+}
+
+/* Células da tabela (th e td) */
+th, td {
+    text-align: left; /* Texto alinhado à esquerda */
+    padding: 8px 8px 65px 8px; /* Espaçamento (muito espaço embaixo) */
+    background-color: white; /* Fundo branco */
+}
+
+/* Estilo para links */
+a {
+    color: #2457cc; /* Azul */
+    text-decoration: none; /* Sem sublinhado */
+    font-weight: bold; /* Negrito */
+    cursor: default; /* Cursor padrão */
+}
+
+/* Pseudo-elemento decorativo no main */
+main::before {
+    content: ""; /* Conteúdo vazio */
+    display: block; /* Bloco */
+    background-color: transparent; /* Fundo transparente */
+    position: absolute; /* Posição absoluta */
+    border: 1px solid #191e28; /* Borda escura */
+    border-radius: 6px; /* Bordas arredondadas */
+    padding: 20px 40%; /* Padding vertical e horizontal */
+    margin-top: 61px; /* Margem superior */
+    border-right: none; /* Sem borda direita */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Modal: fundo escuro semi-transparente */
+
+
+.modal-overlay {
+    display: none; /* Escondido por padrão */
+    position: fixed; /* Fixado na viewport */
+    top: 0; /* Topo da tela */
+    left: 0; /* Esquerda da tela */
+    width: 100%; /* Largura total */
+    height: 100%; /* Altura total */
+    background-color: rgba(0, 0, 0, 0.7); /* Preto semi-transparente */
+    justify-content: center; /* Centraliza horizontalmente (flex) */
+    align-items: center; /* Centraliza verticalmente (flex) */
+    z-index: 99; /* Sobreposto a quase todos os elementos */
+}
+
+/* Conteúdo do modal com fundo branco */
+.modal-content {
+    background-color: white; /* Fundo branco */
+    padding: 40px 20px; /* Espaçamento interno */
+    border-radius: 8px; /* Bordas arredondadas */
+    border: 1px solid #191e28; /* Borda escura */
+    width: 500px; /* Largura fixa */
+    max-width: 90%; /* Máximo 90% da largura da viewport */
+    display: flex; /* Container flex */
+    gap: 10px; /* Espaço entre elementos */
+    flex-direction: column; /* Itens empilhados verticalmente */
+}
+
+/* Container dos botões do modal */
+.modal-buttons {
+    display: flex; /* Flex container */
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 100px; /* Espaço grande entre botões */
+    margin-top: 20px; /* Margem superior */
+}
+
+/* Estilo dos botões do modal */
+.modal-buttons button {
+    padding: 8px 15px; /* Espaçamento interno */
+    border: 1px solid #191e28; /* Borda escura */
+    cursor: pointer; /* Cursor pointer */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+    /*border-radius: 6px; /* Comentado: borda arredondada */
+}
+
+/* Botões de confirmação (login e cadastro) */
+#loginConfirm, #cadastroConfirm {
+    background-color: #191e28; /* Fundo escuro */
+    color: white; /* Texto branco */
+}
+
+/* Botões de cancelar (login e cadastro) */
+#cancelModal1, #cancelModal2 {
+    background-color: white; /* Fundo branco */
+    color: #191e28; /* Texto escuro */
+}
+
+/* Linha do formulário para alinhar label e input */
+.form-row {
+    display: flex; /* Flex container */
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 20px; /* Espaço entre label e input */
+    margin-bottom: 12px; /* Margem inferior */
+    font-size: 25px; /* Fonte grande */
+    font-family: 'IBM Plex Serif'; /* Fonte serifada */
+    font-weight: bold; /* Negrito */
+}
+
+/* Inputs e selects dentro do formulário */
+.form-row input,
+.form-row select {
+    width: 250px; /* Largura fixa */
+    padding: 10px; /* Espaçamento interno */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+    border-radius: 6px; /* Bordas arredondadas */
+    border: 1px solid #191e28; /* Borda escura */
+    box-sizing: border-box; /* Padding incluso na largura */
+    text-align: left; /* Texto alinhado à esquerda */
+}
+
+/* Labels do formulário */
+.form-row label {
+    width: 200px; /* Largura fixa */
+    font-family: 'Courier New', monospace; /* Fonte monoespaçada */
+    text-align: right; /* Alinhado à direita */
+}

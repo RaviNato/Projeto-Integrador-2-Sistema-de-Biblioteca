@@ -1,0 +1,307 @@
+/* Reset básico para remover margens e espaçamentos padrão do navegador */
+body, html {
+    margin: 0; /* remove margens padrão do navegador */
+    padding: 0; /* remove espaçamentos internos padrão */
+    font-family: sans-serif; /* define fonte padrão sem serifa */
+    background-color: white; /* cor de fundo branca */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Barra superior usando pseudo-elemento para criar faixa fixa no topo */
+
+
+body::before {
+    content: ''; /* conteúdo vazio obrigatório para pseudo-elemento */
+    display: block; /* exibe o pseudo-elemento como bloco */
+    height: 60px; /* altura da barra superior */
+    background-color: #191e28; /* cor escura da barra superior */
+    width: 100%; /* ocupa toda a largura da tela */
+    position: fixed; /* fixa no topo da viewport */
+    top: 0; /* fixa encostada no topo */
+    left: 0; /* fixa encostada na esquerda */
+}
+
+/* Estrela no canto superior esquerdo usando pseudo-elemento */
+body::after {
+    content: '★'; /* insere uma estrela como conteúdo */
+    color: #facc15; /* cor amarela brilhante */
+    font-size: 50px; /* tamanho grande da estrela */
+    position: fixed; /* fixa no topo da viewport */
+    top: -8px; /* sobe 8px acima do topo */
+    left: 10px; /* distância da borda esquerda */
+    transform: rotate(15deg); /* rotaciona a estrela em 15 graus */
+}
+
+/* Estilização do dropdown no topo direito */
+#dropdown {
+    border: none; /* remove borda padrão */
+    outline: none; /* remove contorno ao focar */
+    position: fixed; /* fixa na viewport */
+    top: 18px; /* distância do topo */
+    right: 15px; /* distância da direita */
+    background-color: #191e28; /* fundo igual à barra superior */
+    color: white; /* texto branco */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+    font-size: 18px; /* tamanho da fonte */
+    text-decoration: underline; /* sublinha o texto */
+    text-align: right; /* Alinha texto à direita */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Sidebar fixa à esquerda */
+
+
+.sidebar {
+    width: 15%; /* largura fixa em percentual */
+    background: #191e28; /* fundo escuro */
+    color: white; /* texto branco */
+    height: 100%; /* ocupa toda altura da viewport */
+    position: fixed; /* fixa na viewport */
+    display: flex; /* layout flexbox */
+    flex-direction: column; /* itens empilhados verticalmente */
+    padding-top: 60px; /* espaço para não ficar atrás da barra superior */
+}
+
+/* Botões da sidebar */
+.sidebar button {
+    background: none; /* fundo transparente */
+    border: 1px solid white; /* borda branca */
+    color: white; /* texto branco */
+    padding: 10px; /* espaçamento interno */
+    text-align: center; /* texto centralizado */
+    cursor: pointer; /* cursor pointer ao passar o mouse */
+    font-size: 16px; /* tamanho da fonte */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+}
+
+/* Botão ativo na sidebar com cores invertidas */
+.sidebar .active {
+    background: white; /* fundo branco */
+    color: #191e28; /* texto escuro */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Área principal da página */
+
+
+main {
+    margin-left: 18%; /* espaço para a sidebar */
+    margin-right: 2%; /* margem direita */
+    padding-top: 90px; /* espaço para a barra superior */
+    background-color: transparent; /* fundo transparente */
+}
+
+/* Barra de pesquisa como flex container */
+.search-bar {
+    display: flex; /* alinha input e botão na horizontal */
+}
+
+/* Input da barra de pesquisa */
+.search-bar input {
+    padding: 10px; /* espaçamento interno */
+    flex: 1; /* ocupa todo espaço disponível */
+    font-size: 16px; /* tamanho da fonte */
+    border: 1px solid #191e28; /* borda escura */
+    border-radius: 6px; /* borda arredondada */
+}
+
+/* Botão da barra de pesquisa */
+.search-bar button {
+    padding: 10px 15px; /* espaçamento interno */
+    font-size: 16px; /* tamanho da fonte */
+    border: 1px solid #191e28; /* borda escura */
+    background-color: white; /* fundo branco */
+    border-radius: 6px; /* borda arredondada */
+    cursor: pointer; /* cursor pointer */
+    right: 20px; /* propriedade ignorada, pois posição não é relativa/fixa */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+}
+
+/* Tabela com largura total e borda arredondada */
+table {
+    width: 100%; /* largura total */
+    border: 1px solid #191e28; /* borda escura */
+    border-radius: 6px; /* cantos arredondados */
+    margin-top: 20px; /* espaçamento superior */
+    font-family: 'IBM Plex Mono', monospace; /* fonte monoespaçada */
+}
+
+/* Cabeçalhos e células da tabela */
+th, td {
+    text-align: left; /* texto alinhado à esquerda */
+    padding: 8px 8px 65px 8px; /* espaçamento interno (muito espaço inferior) */
+    background-color: white; /* fundo branco */
+}
+
+/* Links com cor azul e negrito */
+a {
+    color: #2457cc; /* cor azul */
+    text-decoration: none; /* sem sublinhado */
+    font-weight: bold; /* negrito */
+    cursor: default; /* Cursor padrão */
+}
+
+/* Pseudo-elemento no main para borda decorativa */
+main::before {
+    content: ""; /* conteúdo vazio */
+    display: block; /* elemento de bloco */
+    background-color: transparent; /* fundo transparente */
+    position: absolute; /* posição absoluta */
+    border: 1px solid #191e28; /* borda escura */
+    border-radius: 6px; /* cantos arredondados */
+    padding: 20px 40%; /* espaçamento interno (vertical 20px, horizontal 40%) */
+    margin-top: 61px; /* margem superior */
+    border-right: none; /* sem borda à direita */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Modal - fundo escuro semi-transparente */
+
+
+.modal-overlay {
+    display: none; /* escondido por padrão */
+    position: fixed; /* fixa na viewport */
+    top: 0; /* topo da tela */
+    left: 0; /* esquerda da tela */
+    width: 100%; /* largura total */
+    height: 100%; /* altura total */
+    background-color: rgba(0, 0, 0, 0.7); /* preto semi-transparente */
+    justify-content: center; /* centraliza horizontalmente conteúdo flex */
+    align-items: center; /* centraliza verticalmente conteúdo flex */
+    z-index: 99; /* fica acima de quase todos os elementos */
+}
+
+/* Conteúdo do modal branco */
+.modal-content {
+    background-color: white; /* fundo branco */
+    padding: 40px 20px; /* espaçamento interno vertical e horizontal */
+    border-radius: 8px; /* cantos arredondados */
+    border: 1px solid #191e28; /* borda escura */
+    width: 500px; /* largura fixa */
+    max-width: 90%; /* máximo 90% da largura da viewport */
+    display: flex; /* container flexível */
+    gap: 10px; /* espaçamento entre elementos filhos */
+    flex-direction: column; /* empilha filhos verticalmente */
+}
+
+/* Container dos botões do modal */
+.modal-buttons {
+    display: flex; /* flex container para botões */
+    justify-content: center; /* centraliza botões horizontalmente */
+    gap: 100px; /* espaçamento entre botões */
+    margin-top: 20px; /* margem superior */
+}
+
+/* Estilo dos botões do modal */
+.modal-buttons button {
+    padding: 8px 15px; /* espaçamento interno */
+    border: 1px solid #191e28; /* borda escura */
+    cursor: pointer; /* cursor pointer */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+    /*border-radius: 6px; /* borda arredondada */
+}
+
+/* Botão de confirmação */
+#confirmAdd {
+    background-color: #191e28; /* fundo escuro */
+    color: white; /* texto branco */
+}
+
+/* Botão de cancelar */
+#cancelModal {
+    background-color: white; /* fundo branco */
+    color: #191e28; /* texto escuro */
+}
+
+/* Linha de formulário para alinhar label e input */
+.form-row {
+    display: flex; /* usa flex para alinhar */
+    justify-content: center; /* centraliza horizontalmente */
+    gap: 20px; /* espaçamento entre label e input */
+    margin-bottom: 12px; /* margem inferior */
+    font-size: 25px; /* tamanho da fonte */
+    font-family: 'IBM Plex Serif'; /* fonte serifada */
+    font-weight: bold; /* negrito */
+}
+
+/* Inputs e selects do formulário */
+.form-row input,
+.form-row select {
+    width: 250px; /* largura fixa */
+    padding: 10px; /* espaçamento interno */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+    border-radius: 6px; /* cantos arredondados */
+    border: 1px solid #191e28; /* borda escura */
+    box-sizing: border-box; /* inclui padding dentro da largura */
+    text-align: left; /* texto alinhado à esquerda */
+}
+
+/* Labels do formulário */
+.form-row label {
+    width: 200px; /* largura fixa menor que input */
+    font-family: 'Courier New', monospace; /* fonte monoespaçada */
+    /*box-sizing: border-box; /* padding incluído na largura (não tem padding aqui, mas ok manter) */
+    text-align: right; /* alinhado à direita */
+}
