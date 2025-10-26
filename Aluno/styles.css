@@ -58,7 +58,7 @@ body.logado::after {
     background-color: #191e28; /* Fundo igual à barra superior */
     color: white; /* Texto branco */
     font-family: 'Courier New', monospace; /* Fonte monoespaçada */
-    font-size: 18px; /* Tamanho da fonte */
+    font-size: 23px; /* Tamanho da fonte */
     text-decoration: underline; /* Sublinha o texto */
     text-align: right; /* Alinha texto à direita */
 }
