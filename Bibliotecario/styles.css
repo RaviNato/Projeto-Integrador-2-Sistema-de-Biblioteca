@@ -57,7 +57,7 @@ body::after {
     background-color: #191e28; /* fundo igual à barra superior */
     color: white; /* texto branco */
     font-family: 'Courier New', monospace; /* fonte monoespaçada */
-    font-size: 18px; /* tamanho da fonte */
+    font-size: 23px; /* tamanho da fonte */
     text-decoration: underline; /* sublinha o texto */
     text-align: right; /* Alinha texto à direita */
 }
