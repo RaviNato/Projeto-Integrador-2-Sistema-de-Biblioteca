@@ -1,0 +1,28 @@
+Para testar
+
+Instale:
+- Node.js (https://nodejs.org/pt/download/current);
+ L Adicionar nas variáveis de ambiente o diretório do node. CMD: path C:\Users\seuUsuario\Desktop\node-v12.18.4-win-x64
+- Instant client da OracleDB (https://www.oracle.com/database/technologies/instant-client/winx64-64-downloads.html);
+ L Adicionar nas variáveis de ambiente o diretório do Instant Client. CMD: path C:\Users\seuUsuario\Desktop\instantclient_21_3
+- Ultimo Microsoft Visual C++ (https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170);
+
+Acesse:
+-Algum client OracleDB;
+
+Altere:
+- BackEndAPI > .env (com suas credenciais de acesso ao OracleDB);
+
+Teste:
+- Abra o CMD;
+- Digite cd C:\Users\seuUsuario\seuDiretorio\Projeto Integrador - Sistema de Biblioteca\BackEndAPI <enter>;
+- Digite node src/server.js <enter>;
+- Digite http://localhost:3000 no navegador;
+
+
+
+
+(Opcional) Teste somente a rota:
+- Abra o CMD;
+- Digite " curl -X POST http://localhost:3000/aluno/cadastro \  -H "Content-Type: application/json" \ -d '{"alunoRA2": "12345", "alunoNome": "Joao"}' "
+

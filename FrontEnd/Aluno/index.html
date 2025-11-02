@@ -1,0 +1,104 @@
+<!-- 12/10 -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Configurações -->
+
+        <link rel="stylesheet" href="styles.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="utf-8">
+        <link href="https://fonts.googleapis.com/css2?family=Caveat&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!-- Dropdown de redirecionamento 
+         Alterar value para "../pagina/index.html" se for abrir diretamente o html no navegador-->
+
+        <select id="dropdown">
+            <option value="/Aluno">Aluno</option>
+            <option value="/Bibliotecario">Biblioteca</option>
+            <option value="/Toten">Totem</option>
+        </select>
+        
+        
+        <!-- Barra lateral -->
+
+        <div class="sidebar">
+            <div class="profile" id="profile">
+                <button id="btnLogin">Login</button>
+                <button id="btnCadastro">Cadastro</button>
+            </div>
+            <button class="inactive" id="btnLivros">Livros Disponíveis</button>
+        </div>
+    <main>
+        <!-- Barra de pesquisa -->
+
+        <div class="search-bar">
+            <input type="text" placeholder="Buscar nome..." id="campoPesquisa" />
+        </div>
+        
+        
+        <!-- Tabela -->
+
+        <table>
+            <thead id="tableHeader">
+                <tr>
+                    <th>Nome</th>
+                    <th>Autor(a)</th>
+                    <th>Categoria</th>
+                    <th>Cód.</th>
+                    <th>Qtd.</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Conteúdo será preenchido por JavaScript -->
+            </tbody>
+        </table>
+    </main>
+    
+    
+    
+    <!-- Forms para login -->
+    <form>
+        <div id="modalOverlay1" class="modal-overlay">
+            <div class="modal-content">
+                <div class="form-row">
+                    <label for="alunoRA">Registro:</label>
+                    <input type="number" id="alunoRA1" required />
+                </div>
+    
+        
+                <div class="modal-buttons">
+                    <button id="cancelModal1">Cancelar</button>
+                    <button type="submit" id="loginConfirm">Login</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <form>
+        <div id="modalOverlay2" class="modal-overlay">
+            <div class="modal-content">
+                <div class="form-row">
+                  <label for="alunoNome">Nome:</label>
+                  <input type="text" id="alunoNome" required />
+                </div>
+                
+            
+                <div class="form-row">
+                    <label for="alunoRA">Registro:</label>
+                    <input type="number" id="alunoRA2" required />
+                </div>
+    
+        
+                <div class="modal-buttons">
+                    <button id="cancelModal2">Cancelar</button>
+                    <button type="submit" id="cadastroConfirm">Criar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script src="script.js"></script>
+    </body>
+</html>

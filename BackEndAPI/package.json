@@ -1,0 +1,26 @@
+{
+  "name": "projeto-integrador-sistema-de-biblioteca",
+  "version": "1.0.0",
+  "description": "O Sistema de Gestão de Biblioteca Universitária tem como objetivo controlar os empréstimos, devoluções, histórico de leitura e classificação de alunos/leitores com base no uso da biblioteca da universidade.",
+  "homepage": "https://github.com/RaviNato/Projeto-Integrador-2-Sistema-de-Biblioteca#readme",
+  "bugs": {
+    "url": "https://github.com/RaviNato/Projeto-Integrador-2-Sistema-de-Biblioteca/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaviNato/Projeto-Integrador-2-Sistema-de-Biblioteca.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "oracledb": "^6.10.0"
+  }
+}
