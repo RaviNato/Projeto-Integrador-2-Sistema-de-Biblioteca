@@ -111,7 +111,7 @@ function SistemaAluno() {
             <button id="btnLogout">X</button>
             <img src="../Midias/user-icon.png" alt="Imagem online">
             <p id="aluno">Aluno</p>
-            <p id="nota">A+</p>
+            <p id="nota">Regular</p>
         `
         // Evento logout
         document.getElementById("btnLogout").addEventListener("click", () => {
