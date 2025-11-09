@@ -8,7 +8,8 @@ Instale:
 - Ultimo Microsoft Visual C++ (https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170);
 
 Acesse:
--Algum client OracleDB;
+- Algum client OracleDB;
+- Rede da PUCC (ou use VPN se estiver de casa);
 
 Altere:
 - BackEndAPI > .env (com suas credenciais de acesso ao OracleDB);
