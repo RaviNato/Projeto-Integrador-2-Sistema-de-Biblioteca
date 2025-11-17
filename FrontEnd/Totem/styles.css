@@ -91,29 +91,29 @@ main {
 form {
     display: flex; /* ativa o flexbox */
     flex-direction: column; /* empilha os elementos verticalmente */
-    gap: 80px; /* espaço vertical entre os grupos */
+    gap: 70px; /* espaço vertical entre os grupos */
     align-items: center; /* centraliza os grupos horizontalmente */
+    font-family: 'IBM Plex Mono', monospace; /* fonte monoespaçada */
 }
 
-/* Agrupamento de input + label ou botões */
-.input-group, .botoes {
+/* Agrupamento de input + label */
+.input-group{
     display: flex; /* ativa o flexbox */
-    flex-direction: row; /* organiza os elementos em linha (horizontal) */
+    flex-direction: column; /* organiza os elementos em linha (vertical) */
     align-items: center; /* alinha verticalmente os itens ao centro */
-    gap: 160px; /* distância horizontal entre label e input ou entre os botões */
+    gap: 10px; /* distância horizontal entre label e input ou entre os botões */
 }
 
 .input-group label {
-    width: 375px; /* largura fixa para alinhar com botão "devolver" */
-    text-align: right; /* alinha o texto do label à direita */
-    font-size: 30px; /* tamanho grande para o rótulo */
+    text-align: center; /* alinha o texto do label ao centro */
+    font-size: 40px; /* tamanho grande para o rótulo */
     font-weight: bold; /* texto em negrito */
     /*margin-bottom: 10px;  espaçamento abaixo do rótulo (desativado) */
     /*display: block; ocupa a linha inteira (desativado) */
 }
 
 .input-group input {
-    width: 375px; /* largura do campo de entrada */
+    width: 400px; /* largura do campo de entrada */
     height: 60px; /* altura do campo */
     font-size: 20px; /* tamanho do texto digitado */
     padding: 10px; /* espaço interno entre texto e borda */
@@ -126,14 +126,19 @@ form {
 /* Botões */
 
 form button {
-    width: 160px; /* largura do botão */
+    width: 190px; /* largura do botão */
     height: 60px; /* altura do botão */
-    font-size: 18px; /* tamanho do texto */
+    font-size: 20px; /* tamanho do texto */
     /*border-radius: 2px;*/ /* cantos levemente arredondados (desativado) */
     cursor: pointer; /* transforma cursor em mãozinha ao passar */
     font-family: 'Courier New', monospace; /* fonte monoespaçada */
     margin-top: 30px; /* espaço acima dos botões */
-    justify-content: center; /* centraliza conteúdo do botão (não tem efeito aqui) */
+}
+
+/* Manter alinhamento horizontal */
+.botoes {
+    display: flex; /* ativa o flexbox */
+    gap: 160px; /* distância horizontal entre label e input ou entre os botões */
 }
 
 /* Botão de devolver */

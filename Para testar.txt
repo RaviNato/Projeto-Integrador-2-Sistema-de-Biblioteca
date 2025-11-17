@@ -17,7 +17,7 @@ Altere:
 Teste:
 - Abra o CMD;
 - Digite cd C:\Users\seuUsuario\seuDiretorio\Projeto Integrador - Sistema de Biblioteca\BackEndAPI <enter>;
-- Digite node src/server.js <enter>;
+- Digite node src\server.js <enter>;
 - Digite http://localhost:3000 no navegador;
 
 
