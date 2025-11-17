@@ -3,8 +3,8 @@ function SistemaAluno() {
     const btnLivros = document.getElementById("btnLivros");
     const btnLogin = document.getElementById("btnLogin");
     const btnCadastro = document.getElementById("btnCadastro");
-    const tableBody = document.getElementById("tableBody");
-    const tableHeader = document.getElementById("tableHeader");
+    const corpoDaTabela = document.getElementById("corpoDaTabela");
+    const titulos = document.getElementById("titulos");
     const modalOverlay1 = document.getElementById("modalOverlay1");
     const modalOverlay2 = document.getElementById("modalOverlay2");
     const cancelModal1 = document.getElementById("cancelModal1");
@@ -18,9 +18,24 @@ function SistemaAluno() {
     const campoPesquisa = document.getElementById("campoPesquisa");
     const dropdown = document.getElementById("dropdown");
     // --- Dados ---
-    const headers = {
-        livros: ["Nome", "Autor(a)", "Categoria", "Cód.", "Qtd."]
+    const colunas = {
+        livros: ["Nome", "Autor(a)", "Categoria", "Código", "Qtd."]
     };
+
+    // --- Restaurar sessão se existir ---
+    const RA = localStorage.getItem("alunoRA");
+    if (RA) {
+        // Reconstrói URL
+        history.replaceState({}, "", `/Aluno/${RA}`);
+        // Reconstrói o perfil
+        mostrarInfoUsuario({
+            ra: RA,
+            aluno: localStorage.getItem("alunoNome"),
+            classificacao: localStorage.getItem("alunoClassificacao")
+        });
+        // Executa passos pós-login automaticamente
+        aposLogin();
+    }
 
 
 
@@ -30,13 +45,15 @@ function SistemaAluno() {
 
     // --- Funções auxiliares ---
 
-    function updateTableHeader(titulo) {
-        if (headers[titulo]) {
-            tableHeader.innerHTML = `<tr>${headers[titulo].map(h => `<th>${h}</th>`).join('')}</tr>`;
+    // Atualiza titulo das colunas
+    function atualizarTitulos(titulo) {
+        if (colunas[titulo]) {
+            titulos.innerHTML = `<tr>${colunas[titulo].map(h => `<th>${h}</th>`).join('')}</tr>`;
         }
     }
 
-    function renderTable(data) {
+    // Carrega tabela
+    function atualizarTabela(data) {
         const html = data.map(item => {
             if (item.autor !== undefined) {
                 return `
@@ -50,37 +67,35 @@ function SistemaAluno() {
             }
             return '';
         }).join('');
-        tableBody.innerHTML = html;
+        corpoDaTabela.innerHTML = html;
     }
 
+    // Puxa informações dos livros do banco de dados
     async function carregarLivros() {
         try {
             const res = await fetch('/consultar/livros');
             const livros = await res.json();
 
-            updateTableHeader('livros');
-            renderTable(livros);
+            atualizarTitulos('livros');
+            atualizarTabela(livros);
 
             campoPesquisa.addEventListener("input", () => {
                 const termo = campoPesquisa.value.toLowerCase();
                 const livrosFiltrados = livros.filter(livro => livro.nome.toLowerCase().includes(termo));
-                renderTable(livrosFiltrados);
+                atualizarTabela(livrosFiltrados);
             });
         } catch (err) {
             console.error('Erro ao carregar livros:', err);
         }
     }
 
+    // Limpa campos de escrita
     function limparCamposModal() {
         modalOverlay1.querySelectorAll('input, select').forEach(input => input.value = "");
         modalOverlay2.querySelectorAll('input, select').forEach(input => input.value = "");
     }
 
-    function fazerLogin() {
-        btnLivros.classList.remove("inactive");
-        btnLivros.classList.add("active");
-    }
-
+    // Cadastrar novo aluno no banco de dados
     async function cadastrar() { 
         const alunoRA2 = document.getElementById("alunoRA2").value;
         const alunoNome = document.getElementById("alunoNome").value;
@@ -90,11 +105,26 @@ function SistemaAluno() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ alunoRA2, alunoNome })
         });
-        const data = await res.json();
-        alert(data.mensagem || data.erro);
+        const alunoRetornado = await res.json();
+        if (!alunoRetornado.mensagem){
+            alert(alunoRetornado.erro);
+        } else {
+            alert(alunoRetornado.mensagem);
+            // Salva sessão
+            localStorage.setItem("alunoRA", alunoRetornado.ra);
+            localStorage.setItem("alunoNome", alunoRetornado.aluno);
+            localStorage.setItem("alunoClassificacao", alunoRetornado.classificacao);
+
+            // Muda a URL
+            history.pushState({}, "", `/Aluno/${alunoRetornado.ra}`);
+
+            // Atualiza a interface
+            mostrarInfoUsuario(alunoRetornado);
+        }
     }
 
-    /*async function logar() { 
+    // Entrar como aluno
+    async function logar() { 
         const alunoRA1 = document.getElementById("alunoRA1").value;
         
         const res = await fetch('/aluno/login', {
@@ -102,29 +132,105 @@ function SistemaAluno() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ alunoRA1 })
         });
-        const data = await res.json();
-        alert(data.mensagem || data.erro);
-    }*/
+        const alunoRetornado = await res.json();
 
-    function mostrarInfoUsuario() {
+        if (!alunoRetornado) {
+            alert("RA não cadastrado!");
+            return;
+        } else if (alunoRetornado){
+            alert("Aluno entrou com sucesso!");
+            // Salva sessão
+            localStorage.setItem("alunoRA", alunoRetornado.ra);
+            localStorage.setItem("alunoNome", alunoRetornado.aluno);
+            localStorage.setItem("alunoClassificacao", alunoRetornado.classificacao);
+
+            // Muda a URL
+            history.pushState({}, "", `/Aluno/${alunoRetornado.ra}`);
+
+            // Atualiza a interface
+            mostrarInfoUsuario(alunoRetornado);
+        } else {
+            alert(alunoRetornado.erro);
+        }
+    }
+
+    // Atualiza informações do usuário após login
+    function mostrarInfoUsuario(data) {
         profile.innerHTML = `
             <button id="btnLogout">X</button>
             <img src="../Midias/user-icon.png" alt="Imagem online">
-            <p id="aluno">Aluno</p>
-            <p id="nota">Regular</p>
-        `
+            <p id="aluno">${data.aluno}</p>
+            <p id="classificacao">${data.classificacao}</p>
+        `;
+
         // Evento logout
         document.getElementById("btnLogout").addEventListener("click", () => {
-        location.reload();
+            // Remove sessão
+            localStorage.removeItem("alunoRA");
+            localStorage.removeItem("alunoNome");
+            localStorage.removeItem("alunoClassificacao");
+            // Volta para URL base
+            history.pushState({}, "", `/Aluno`);
+            // limpa a interface
+            location.reload(); 
         });
+
+        aposLogin();
     }
 
+    function atualizarTabela(data) {
+        let html = "";
+        data.forEach(item => {
+        if (item.autor !== undefined) {
+            html += `
+                <tr>
+                    <td><a href="#">${item.nome}</a></td>
+                    <td>${item.autor}</td>
+                    <td>${item.categoria}</td>
+                    <td>${item.codigo}</td>
+                    <td>${item.qtd}</td>
+                </tr>`;
+        } else if (item.classificacao !== undefined){
+            html += `
+                <tr>
+                    <td><a href="#">${item.nome}</a></td>
+                    <td>${item.ra}</td>
+                    <td>${item.retiradas}</td>
+                    <td>${item.devolucoes}</td>
+                    <td>${item.classificacao}</td>
+                </tr>`;
+        } else if (item.dataderetirada !== undefined){
+            html += `
+                <tr>
+                    <td><a href="#">${item.livro}</a></td>
+                    <td>${item.codigodolivro}</td>
+                    <td>${item.aluno}</td>
+                    <td>${item.ra}</td>
+                    <td>${item.dataderetirada}</td>
+                </tr>`;
+        } else {
+            html += `
+                <tr>
+                    <td><a href="#">${item.livro}</a></td>
+                    <td>${item.codigodolivro}</td>
+                    <td>${item.aluno}</td>
+                    <td>${item.ra}</td>
+                    <td>${item.datadedevolucao}</td>
+                </tr>`;
+        }
+        });
+        corpoDaTabela.innerHTML = html;
+    }
+
+    // Puxa funções após login
     function aposLogin() {
-        fazerLogin();
+        modalOverlay1.style.display = "none";
+        modalOverlay2.style.display = "none";
+        btnLivros.classList.remove("inactive");
+        btnLivros.classList.add("active");
         limparCamposModal();
-        updateTableHeader("livros");
+        atualizarTitulos("livros");
         document.body.classList.add("logado");
-        mostrarInfoUsuario();
         campoPesquisa.value = "";
         carregarLivros();
     }
@@ -171,8 +277,7 @@ function SistemaAluno() {
             alunoRA1.focus();
             return;
         }
-        modalOverlay1.style.display = "none";
-        aposLogin();
+        logar();
     });
 
     // Confirmar cadastro
@@ -187,10 +292,12 @@ function SistemaAluno() {
             return;
         }
         cadastrar();
-        modalOverlay2.style.display = "none";
-        aposLogin();
     });
+
+
 }
 
 // Inicializa ao carregar DOM
-document.addEventListener("DOMContentLoaded", SistemaAluno);
+document.addEventListener("DOMContentLoaded", () => {
+    SistemaAluno();
+});

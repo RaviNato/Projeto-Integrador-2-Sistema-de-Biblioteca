@@ -2,31 +2,19 @@ function SistemaBibliotecario(){
     const btnLivros = document.getElementById("btnLivros");
     const btnAlunos = document.getElementById("btnAlunos");
     const btnNaoDevolvidos = document.getElementById("btnNaoDevolvidos");
-    const btnRegistros = document.getElementById("btnRegistros");
-    const addButton = document.getElementById("addButton");
-    const tableBody = document.getElementById("tableBody");
+    const btnDevolvidos = document.getElementById("btnDevolvidos");
+    const btnAdd = document.getElementById("btnAdd");
+    const corpoDaTabela = document.getElementById("corpoDaTabela");
     const modalOverlay = document.getElementById("modalOverlay");
     const cancelModal = document.getElementById("cancelModal");
     const confirmAdd = document.getElementById("confirmAdd");
     const campoPesquisa = document.getElementById("campoPesquisa");
     // --- Dados ---
-    const alunos = [
-        { nome: "Caio Lucena Andrade", ra: "25011275", retiradas: "2", devolucoes: "4", classificacao: "Regular" },
-        { nome: "Teste da Silva", ra: "124324234", retiradas: "2", devolucoes: "2", classificacao: "Ativo" }
-    ];
-    const naodevolvidos = [
-        { livro: "Dom Casmurro", codigodolivro: "101", aluno: "Caio Lucena Andrade", ra: "25011275", codigoderetirada: "48" },
-        { livro: "Cem Anos de Solidão", codigodolivro: "102", aluno: "Teste da Silva", ra: "124324234", codigoderetirada: "47" }
-    ];
-    const registros = [
-        { livro: "Dom Casmurro", codigodolivro: "101", aluno: "Caio Lucena Andrade", ra: "25011275", movimentacao: "Retirada" },
-        { livro: "Cem Anos de Solidão", codigodolivro: "102", aluno: "Teste da Silva", ra: "124324234", movimentacao: "Retirada" }
-    ];
-    const headers = {
-        livros: ["Nome", "Autor(a)", "Categoria", "Cód.", "Qtd."],
+    const colunas = {
+        livros: ["Nome", "Autor(a)", "Categoria", "Código", "Qtd."],
         alunos: ["Nome", "RA", "Retiradas", "Devoluções", "Classificação"],
-        naodevolvidos: ["Livro", "Código do Livro", "Aluno", "RA", "Código de retirada"],
-        registros: ["Livro", "Código do Livro", "Aluno", "RA", "Movimentação"]
+        naodevolvidos: ["Livro", "Código do Livro", "Aluno", "RA", "Data de retirada"],
+        devolvidos: ["Livro", "Código do Livro", "Aluno", "RA", "Data de devolução"]
     };
 
 
@@ -38,14 +26,16 @@ function SistemaBibliotecario(){
 
     // --- Funções auxiliares ---
 
-    function updateTableHeader(titulo) {
-        const tableHeader = document.getElementById("tableHeader");
-        if (headers[titulo]) {
-            tableHeader.innerHTML = `<tr>${headers[titulo].map(h => `<th>${h}</th>`).join('')}</tr>`;
+    // Atualiza o nome das colunas
+    function atualizarTitulo(titulo) {
+        const atualizarTitulos = document.getElementById("titulo");
+        if (colunas[titulo]) {
+            atualizarTitulos.innerHTML = `<tr>${colunas[titulo].map(h => `<th>${h}</th>`).join('')}</tr>`;
         }
     }
 
-    function renderTable(data) {
+    // Atualiza a tabela
+    function atualizarTabela(data) {
         let html = "";
         data.forEach(item => {
         if (item.autor !== undefined) {
@@ -66,14 +56,14 @@ function SistemaBibliotecario(){
                     <td>${item.devolucoes}</td>
                     <td>${item.classificacao}</td>
                 </tr>`;
-        } else if (item.codigoderetirada !== undefined){
+        } else if (item.dataderetirada !== undefined){
             html += `
                 <tr>
                     <td><a href="#">${item.livro}</a></td>
                     <td>${item.codigodolivro}</td>
                     <td>${item.aluno}</td>
                     <td>${item.ra}</td>
-                    <td>${item.codigoderetirada}</td>
+                    <td>${item.dataderetirada}</td>
                 </tr>`;
         } else {
             html += `
@@ -82,60 +72,97 @@ function SistemaBibliotecario(){
                     <td>${item.codigodolivro}</td>
                     <td>${item.aluno}</td>
                     <td>${item.ra}</td>
-                    <td>${item.movimentacao}</td>
+                    <td>${item.datadedevolucao}</td>
                 </tr>`;
         }
         });
-        tableBody.innerHTML = html;
+        corpoDaTabela.innerHTML = html;
     }
     
-    function pesquisarAlunos() {
+    // Sistema de pesquisa
+    /*function pesquisarAlunos() {
         campoPesquisa.value = "";
       
         campoPesquisa.addEventListener("input", () => {
             const termo = campoPesquisa.value.toLowerCase();
             const alunosFiltrados = alunos.filter(aluno => aluno.nome.toLowerCase().includes(termo));
-            renderTable(alunosFiltrados);
+            atualizarTabela(alunosFiltrados);
         });
-    }
-        
-    function pesquisarLivrosNaoDevolvidos() {
-        campoPesquisa.value = "";
-      
-        campoPesquisa.addEventListener("input", () => {
-            const termo = campoPesquisa.value.toLowerCase();
-            const naodevolvidosFiltrados = naodevolvidos.filter(naodevolvidos => naodevolvidos.livro.toLowerCase().includes(termo));
-            renderTable(naodevolvidosFiltrados);
-        });
-    }
-        
-    function pesquisarRegistros() {
-        campoPesquisa.value = "";
-      
-        campoPesquisa.addEventListener("input", () => {
-            const termo = campoPesquisa.value.toLowerCase();
-            const registros = registros.filter(registros => registros.livro.toLowerCase().includes(termo));
-            renderTable(registros);
-        });
-    }
+    }*/
 
+    // Puxa informações do livro do banco de dados
     async function carregarLivros() {
         try {
             const res = await fetch('/consultar/livros');
             const livros = await res.json();
 
-            updateTableHeader('livros');
-            renderTable(livros);
+            atualizarTitulo('livros');
+            atualizarTabela(livros);
             campoPesquisa.addEventListener("input", () => {
                 const termo = campoPesquisa.value.toLowerCase();
                 const livrosFiltrados = livros.filter(livro => livro.nome.toLowerCase().includes(termo));
-                renderTable(livrosFiltrados);
+                atualizarTabela(livrosFiltrados);
             });
         } catch (err) {
             console.error('Erro ao carregar livros:', err);
         }
     }
 
+    // Puxa informações dos alunos do banco de dados
+    async function carregarAlunos() {
+        try {
+            const res = await fetch('/consultar/alunos');
+            const alunos = await res.json();
+
+            atualizarTitulo('alunos');
+            atualizarTabela(alunos);
+            campoPesquisa.addEventListener("input", () => {
+                const termo = campoPesquisa.value.toLowerCase();
+                const alunosFiltrados = alunos.filter(aluno => aluno.nome.toLowerCase().includes(termo));
+                atualizarTabela(alunosFiltrados);
+            });
+        } catch (err) {
+            console.error('Erro ao carregar alunos:', err);
+        }
+    }
+
+    // Puxa informações dos livros não devolvidos do banco de dados
+    async function carregarLivrosNaoDevolvidos() {
+        try {
+            const res = await fetch('/consultar/naodevolvidos');
+            const naoDevolvidos = await res.json();
+
+            atualizarTitulo('naodevolvidos');
+            atualizarTabela(naoDevolvidos);
+            campoPesquisa.addEventListener("input", () => {
+                const termo = campoPesquisa.value.toLowerCase();
+                const naoDevolvidosFiltrados = naoDevolvidos.filter(naoDevolvido => naoDevolvido.nome.toLowerCase().includes(termo));
+                atualizarTabela(naoDevolvidosFiltrados);
+            });
+        } catch (err) {
+            console.error('Erro ao carregar livros não devolvidos:', err);
+        }
+    }
+
+    // Puxa informações dos livros devolvidos do banco de dados
+    async function carregarLivrosDevolvidos() {
+        try {
+            const res = await fetch('/consultar/devolvidos');
+            const devolvidos = await res.json();
+
+            atualizarTitulo('devolvidos');
+            atualizarTabela(devolvidos);
+            campoPesquisa.addEventListener("input", () => {
+                const termo = campoPesquisa.value.toLowerCase();
+                const devolvidosFiltrados = devolvidos.filter(devolvido => devolvido.nome.toLowerCase().includes(termo));
+                atualizarTabela(devolvidosFiltrados);
+            });
+        } catch (err) {
+            console.error('Erro ao carregar livros devolvidos:', err);
+        }
+    }
+
+    // Cadastro novo livro no banco de dados
     async function cadastrar() { 
         const bookName = document.getElementById("bookName").value;
         const bookAuthor = document.getElementById("bookAuthor").value;
@@ -154,12 +181,11 @@ function SistemaBibliotecario(){
         carregarLivros();
     }
 
+    // Limpa campos de escrita
     function limparCamposModal() {
         const inputs = modalOverlay.querySelectorAll('input, select');
         inputs.forEach(input => input.value = "");
     }
-
-
 
 
 
@@ -179,55 +205,49 @@ function SistemaBibliotecario(){
     carregarLivros();
     
     // Mudar aba lateral
-    let activeTable = "livros";
+    let tabelaAtiva = "livros";
     btnLivros.addEventListener("click", () => {
-        if (activeTable === "livros") return;
-        activeTable = "livros";
+        if (tabelaAtiva === "livros") return;
+        tabelaAtiva = "livros";
         btnLivros.classList.add("active");
         btnAlunos.classList.remove("active");
         btnNaoDevolvidos.classList.remove("active");
-        btnRegistros.classList.remove("active");
-        addButton.style.display = "inline-block";
+        btnDevolvidos.classList.remove("active");
+        btnAdd.style.display = "inline-block";
         carregarLivros();
     });
     btnAlunos.addEventListener("click", () => {
-        if (activeTable === "alunos") return;
-        activeTable = "alunos";
+        if (tabelaAtiva === "alunos") return;
+        tabelaAtiva = "alunos";
         btnAlunos.classList.add("active");
         btnLivros.classList.remove("active");
         btnNaoDevolvidos.classList.remove("active");
-        btnRegistros.classList.remove("active");
-        addButton.style.display = "none";
-        updateTableHeader("alunos");
-        renderTable(alunos);
-        pesquisarAlunos();
+        btnDevolvidos.classList.remove("active");
+        btnAdd.style.display = "none";
+        carregarAlunos();
     });
     btnNaoDevolvidos.addEventListener("click", () => {
-        if (activeTable === "naodevolvidos") return;
-        activeTable = "naodevolvidos";
+        if (tabelaAtiva === "naodevolvidos") return;
+        tabelaAtiva = "naodevolvidos";
         btnNaoDevolvidos.classList.add("active");
         btnLivros.classList.remove("active");
         btnAlunos.classList.remove("active");
-        btnRegistros.classList.remove("active");
-        addButton.style.display = "none";
-        updateTableHeader("naodevolvidos");
-        renderTable(naodevolvidos);
-        pesquisarLivrosNaoDevolvidos();
+        btnDevolvidos.classList.remove("active");
+        btnAdd.style.display = "none";
+        carregarLivrosNaoDevolvidos();
     });
-    btnRegistros.addEventListener("click", () => {
-        if (activeTable === "registros") return;
-        activeTable = "registros";
-        btnRegistros.classList.add("active");
+    btnDevolvidos.addEventListener("click", () => {
+        if (tabelaAtiva === "devolvidos") return;
+        tabelaAtiva = "devolvidos";
+        btnDevolvidos.classList.add("active");
         btnLivros.classList.remove("active");
         btnAlunos.classList.remove("active");
         btnNaoDevolvidos.classList.remove("active");
-        updateTableHeader("registros");
-        renderTable(registros);
-        pesquisarRegistros();
+        carregarLivrosDevolvidos();
     });
     
     // Abrir modal
-    addButton.addEventListener("click", () => {
+    btnAdd.addEventListener("click", () => {
         modalOverlay.style.display = "flex";
     });
 

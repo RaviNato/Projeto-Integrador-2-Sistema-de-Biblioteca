@@ -28,6 +28,11 @@ app.get('/', (req, res) => {
   res.redirect('/Aluno');
 });
 
+// rota que permite qualquer URL do tipo /Aluno/:id também carregue a pagina do Aluno
+app.get('/Aluno/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../../FrontEnd/Aluno/index.html'));
+});
+
 // rota coringa: permite acessar outras paginas
 app.get('/:pagina', (req, res) => {
   const pagina = req.params.pagina;
@@ -66,13 +71,53 @@ app.post('/aluno/cadastro', async (req, res) => {
         :alunoNome,
         0,
         0,
-        'Leitor Iniciante'
+        'Iniciante'
       )`,
       { alunoRA2, alunoNome },
       { autoCommit: true }
     );
 
-    res.json({ sucesso: true, mensagem: 'Aluno cadastrado com sucesso!' });
+    res.json({ sucesso: true, mensagem: 'Aluno cadastrado com sucesso!', ra: alunoRA2, aluno: alunoNome, classificacao: 'Iniciante'});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.post('/aluno/login', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { alunoRA1 } = req.body;
+
+    console.log('Tipo de alunoRA1:', typeof alunoRA1, alunoRA1);
+
+    const result = await conn.execute(
+      `SELECT
+        REGISTRO,
+        NOME,
+        CLASSIFICACOES
+      FROM ALUNOS
+      WHERE REGISTRO = :alunoRA1`,
+      { alunoRA1 }
+    );
+
+    // Transforma o resultado do Oracle em um array de objetos mais fácil de usar no front
+    const alunoRetornado = result.rows.map(row => ({
+      ra: row[0],
+      aluno: row[1],
+      classificacao: row[2]
+    }));
+
+    res.json(alunoRetornado[0] || null);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: err.message });
@@ -150,14 +195,13 @@ app.get('/consultar/livros', async (req, res) => {
 
     const result = await conn.execute(
       `SELECT
-        LIVROS.NOME,
-        LIVROS.AUTOR,
-        LIVROS.CATEGORIA,
-        LIVROS.COD_LIVRO,
-        EXEMPLARES.QUANTIDADE
-      FROM LIVROS
-      INNER JOIN EXEMPLARES
-        ON LIVROS.COD_LIVRO = EXEMPLARES.CODIGO_LIVRO`
+        l.NOME,
+        l.AUTOR,
+        l.CATEGORIA,
+        ex.COD_EXEMPLAR,
+        ex.QUANTIDADE
+      FROM LIVROS l
+      JOIN EXEMPLARES ex ON l.COD_LIVRO = ex.CODIGO_LIVRO`
     );
 
     // Transforma o resultado do Oracle em um array de objetos mais fácil de usar no front
@@ -171,6 +215,236 @@ app.get('/consultar/livros', async (req, res) => {
 
     res.json(livros);
 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.get('/consultar/alunos', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const result = await conn.execute(
+      `SELECT
+        NOME,
+        REGISTRO,
+        RETIRADAS,
+        DEVOLUCOES,
+        CLASSIFICACOES
+      FROM ALUNOS`
+    );
+
+    // Transforma o resultado do Oracle em um array de objetos mais fácil de usar no front
+    const alunos = result.rows.map(row => ({
+      nome: row[0],
+      ra: row[1],
+      retiradas: row[2],
+      devolucoes: row[3],
+      classificacao: row[4]
+    }));
+
+    res.json(alunos);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.get('/consultar/naodevolvidos', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const result = await conn.execute(
+      `SELECT
+        l.NOME,
+        em.CODIGO_EXEMPLAR,
+        a.NOME,
+        em.RA_ALUNO,
+        TO_CHAR(em.DATA_RETIRADA, 'dd/mm/yyyy hh24:mi:ss')
+      FROM EMPRESTIMOS em
+      JOIN EXEMPLARES ex ON em.CODIGO_EXEMPLAR = ex.COD_EXEMPLAR
+      JOIN LIVROS l ON ex.CODIGO_LIVRO = l.COD_LIVRO
+      JOIN ALUNOS a ON em.RA_ALUNO = a.REGISTRO
+      AND em.DATA_DEVOLUCAO IS NULL`
+    );
+
+    // Transforma o resultado do Oracle em um array de objetos mais fácil de usar no front
+    const naoDevolvidos = result.rows.map(row => ({
+      livro: row[0],
+      codigodolivro: row[1],
+      aluno: row[2],
+      ra: row[3],
+      dataderetirada: row[4]
+    }));
+
+    res.json(naoDevolvidos);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.get('/consultar/devolvidos', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const result = await conn.execute(
+      `SELECT
+        l.NOME,
+        em.CODIGO_EXEMPLAR,
+        a.NOME,
+        em.RA_ALUNO,
+        TO_CHAR(em.DATA_DEVOLUCAO, 'dd/mm/yyyy hh24:mi:ss')
+      FROM EMPRESTIMOS em
+      JOIN EXEMPLARES ex ON em.CODIGO_EXEMPLAR = ex.COD_EXEMPLAR
+      JOIN LIVROS l ON ex.CODIGO_LIVRO = l.COD_LIVRO
+      JOIN ALUNOS a ON em.RA_ALUNO = a.REGISTRO
+      AND em.DATA_DEVOLUCAO IS NOT NULL`
+    );
+
+    // Transforma o resultado do Oracle em um array de objetos mais fácil de usar no front
+    const devolvidos = result.rows.map(row => ({
+      livro: row[0],
+      codigodolivro: row[1],
+      aluno: row[2],
+      ra: row[3],
+      datadedevolucao: row[4]
+    }));
+
+    res.json(devolvidos);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.post('/totem/retirada', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { ra, codlivro } = req.body;
+
+    console.log('Tipo de RA:', typeof ra, ra);
+    console.log('Tipo de Colivro:', typeof codlivro, codlivro);
+
+    await conn.execute(`
+      INSERT INTO EMPRESTIMOS (
+        ID_EMPRESTIMO,
+        RA_ALUNO,
+        CODIGO_EXEMPLAR,
+        DATA_RETIRADA
+      ) VALUES (
+        SEQ_EMPRESTIMOS.NEXTVAL,
+        :ra,
+        :codlivro,
+        SYSDATE
+      )`,
+      { ra, codlivro },
+      { autoCommit: false }
+    );
+    await conn.execute(`
+      UPDATE ALUNOS
+      SET RETIRADAS = RETIRADAS + 1
+      WHERE REGISTRO = :ra`,
+      { ra },
+      { autoCommit: false }
+    );
+    await conn.execute(`
+      UPDATE EXEMPLARES
+      SET QUANTIDADE = QUANTIDADE - 1
+      WHERE COD_EXEMPLAR = :codlivro`,
+      { codlivro },
+      { autoCommit: true }
+    );
+
+    res.json({ sucesso: true, mensagem: 'Retirada feita com sucesso!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.post('/totem/devolucao', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { ra, codlivro } = req.body;
+
+    console.log('Tipo de RA:', typeof ra, ra);
+    console.log('Tipo de Colivro:', typeof codlivro, codlivro);
+
+    await conn.execute(`
+      UPDATE EMPRESTIMOS
+      SET DATA_DEVOLUCAO = SYSDATE
+      WHERE RA_ALUNO = :ra
+      AND CODIGO_EXEMPLAR = :codlivro
+      AND ID_EMPRESTIMO = (
+        SELECT 
+          MAX(ID_EMPRESTIMO)
+        FROM EMPRESTIMOS
+        WHERE RA_ALUNO = :ra
+        AND CODIGO_EXEMPLAR = :codlivro
+      )
+      AND DATA_DEVOLUCAO IS NULL
+      `,
+      { ra, codlivro },
+      { autoCommit: false }
+    );
+    await conn.execute(`
+      UPDATE ALUNOS
+      SET DEVOLUCOES = DEVOLUCOES + 1
+      WHERE REGISTRO = :ra`,
+      { ra },
+      { autoCommit: false }
+    );
+    await conn.execute(`
+      UPDATE EXEMPLARES
+      SET QUANTIDADE = QUANTIDADE + 1
+      WHERE COD_EXEMPLAR = :codlivro`,
+      { codlivro },
+      { autoCommit: true }
+    );
+
+    res.json({ sucesso: true, mensagem: 'Devolução feita com sucesso!' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: err.message });

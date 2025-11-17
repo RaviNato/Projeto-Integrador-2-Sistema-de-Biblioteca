@@ -182,7 +182,7 @@ img {
 }
 
 /* Estilo para texto com id "nota" dentro do perfil */
-.sidebar .profile #nota {
+.sidebar .profile #classificacao {
     font-size: 35px; /* Fonte grande */
     color: #305bab; /* Cor azul */
     font-family: 'Caveat', cursive; /* Fonte cursiva */
