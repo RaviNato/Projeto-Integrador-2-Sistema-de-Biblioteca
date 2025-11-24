@@ -170,14 +170,25 @@ function SistemaBibliotecario(){
         const bookCategory = document.getElementById("bookCategory").value;
         const bookQuantity = document.getElementById("bookQuantity").value;
         
+        if (bookYear <= 1000 || bookYear > new Date().getFullYear()) {
+            mostrarMensagem("Ano de publicação inválido!", "erro");
+            return;
+        }
+
+        if (bookQuantity <= 0) {
+            mostrarMensagem("Quantidade deve ser maior que zero!", "erro");
+            return;
+        }
+
         const res = await fetch('/bibliotecario/cadastro', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ bookName, bookAuthor, bookYear, bookCategory, bookQuantity })
         });
         const data = await res.json();
-        alert(data.mensagem || data.erro);
-
+        //alert(data.erro);
+        mostrarMensagem("Livro(s) cadastrado(s) com sucesso!", "sucesso");
+        
         carregarLivros();
     }
 
@@ -185,6 +196,23 @@ function SistemaBibliotecario(){
     function limparCamposModal() {
         const inputs = modalOverlay.querySelectorAll('input, select');
         inputs.forEach(input => input.value = "");
+    }
+
+    // Mostrar mensagem na tela
+    function mostrarMensagem(texto, tipo) {
+        const msg = document.getElementById("mensagem");
+
+        msg.innerText = texto;
+
+        msg.className = "msg"; // reset
+        msg.classList.add(tipo === "sucesso" ? "msg-sucesso" : "msg-erro");
+
+        msg.style.display = "block";
+
+        // esconder automaticamente após 3s
+        setTimeout(() => {
+            msg.style.display = "none";
+        }, 3000);
     }
 
 

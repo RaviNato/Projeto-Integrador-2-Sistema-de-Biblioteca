@@ -169,17 +169,32 @@ button[value="retirar"] {
 
 
 
-/* Mensagem de sucesso
+/* Mensagem de sucesso */
 
-
-.success-message {
-    margin-top: 30px;             espaçamento acima da mensagem
-    background-color: #047857;    fundo verde escuro
-    color: white;                 texto branco
-    padding: 15px 30px;           espaço interno vertical e horizontal
-    text-align: center;           centraliza o texto
-    font-family: 'Courier New', monospace; fonte monoespaçada
-    font-size: 16px;              tamanho do texto
-    border-radius: 2px;           cantos levemente arredondados
+.msg {
+    position: fixed; /* fixa na tela */
+    bottom: 20px; /* 20px do fundo */
+    padding: 23px 100px; /* espaçamento interno */
+    font-size: 18px; /* tamanho do texto */
+    font-family: 'IBM Plex Mono', monospace; /* Fonte monoespaçada */
+    /*font-weight: bold;*/
+    color: white; /* texto branco */
+    display: none; /* começa invisível */
+    animation: fadeInOut 3s; /* animação de fade in e out */
+    /*background-color: gray;*/
 }
-*/
+
+.msg-sucesso {
+    background-color: #319949; /* verde */
+}
+
+.msg-erro {
+    background-color: #dc3545; /* vermelho */
+}
+
+@keyframes fadeInOut {
+    0%   { opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; }
+}

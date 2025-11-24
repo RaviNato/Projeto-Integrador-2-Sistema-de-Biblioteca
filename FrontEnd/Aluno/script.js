@@ -99,6 +99,11 @@ function SistemaAluno() {
     async function cadastrar() { 
         const alunoRA2 = document.getElementById("alunoRA2").value;
         const alunoNome = document.getElementById("alunoNome").value;
+
+        if ((await validarRA(alunoRA2)).existe) {
+            mostrarMensagem("RA já cadastrado!", "erro");
+            return;
+        }
         
         const res = await fetch('/aluno/cadastro', {
             method: 'POST',
@@ -106,10 +111,8 @@ function SistemaAluno() {
             body: JSON.stringify({ alunoRA2, alunoNome })
         });
         const alunoRetornado = await res.json();
-        if (!alunoRetornado.mensagem){
-            alert(alunoRetornado.erro);
-        } else {
-            alert(alunoRetornado.mensagem);
+        if (alunoRetornado){
+            mostrarMensagem("Cadastro realizado com sucesso!", "sucesso");
             // Salva sessão
             localStorage.setItem("alunoRA", alunoRetornado.ra);
             localStorage.setItem("alunoNome", alunoRetornado.aluno);
@@ -126,6 +129,11 @@ function SistemaAluno() {
     // Entrar como aluno
     async function logar() { 
         const alunoRA1 = document.getElementById("alunoRA1").value;
+
+        if (!(await validarRA(alunoRA1)).existe) {
+            mostrarMensagem("RA não cadastrado!", "erro");
+            return;
+        }
         
         const res = await fetch('/aluno/login', {
             method: 'POST',
@@ -134,11 +142,8 @@ function SistemaAluno() {
         });
         const alunoRetornado = await res.json();
 
-        if (!alunoRetornado) {
-            alert("RA não cadastrado!");
-            return;
-        } else if (alunoRetornado){
-            alert("Aluno entrou com sucesso!");
+        if (alunoRetornado){
+            mostrarMensagem("Login realizado com sucesso!", "sucesso");
             // Salva sessão
             localStorage.setItem("alunoRA", alunoRetornado.ra);
             localStorage.setItem("alunoNome", alunoRetornado.aluno);
@@ -149,8 +154,6 @@ function SistemaAluno() {
 
             // Atualiza a interface
             mostrarInfoUsuario(alunoRetornado);
-        } else {
-            alert(alunoRetornado.erro);
         }
     }
 
@@ -178,48 +181,24 @@ function SistemaAluno() {
         aposLogin();
     }
 
-    function atualizarTabela(data) {
-        let html = "";
-        data.forEach(item => {
-        if (item.autor !== undefined) {
-            html += `
-                <tr>
-                    <td><a href="#">${item.nome}</a></td>
-                    <td>${item.autor}</td>
-                    <td>${item.categoria}</td>
-                    <td>${item.codigo}</td>
-                    <td>${item.qtd}</td>
-                </tr>`;
-        } else if (item.classificacao !== undefined){
-            html += `
-                <tr>
-                    <td><a href="#">${item.nome}</a></td>
-                    <td>${item.ra}</td>
-                    <td>${item.retiradas}</td>
-                    <td>${item.devolucoes}</td>
-                    <td>${item.classificacao}</td>
-                </tr>`;
-        } else if (item.dataderetirada !== undefined){
-            html += `
-                <tr>
-                    <td><a href="#">${item.livro}</a></td>
-                    <td>${item.codigodolivro}</td>
-                    <td>${item.aluno}</td>
-                    <td>${item.ra}</td>
-                    <td>${item.dataderetirada}</td>
-                </tr>`;
-        } else {
-            html += `
-                <tr>
-                    <td><a href="#">${item.livro}</a></td>
-                    <td>${item.codigodolivro}</td>
-                    <td>${item.aluno}</td>
-                    <td>${item.ra}</td>
-                    <td>${item.datadedevolucao}</td>
-                </tr>`;
-        }
+    // Puxa classificação atual do aluno
+    async function classificacaoAtual(ra) {
+        const res = await fetch('/sistema/classificacaoAtual', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ra })
         });
-        corpoDaTabela.innerHTML = html;
+
+        const data = await res.json();
+        //alert(data.erro);
+
+        return data.classificacao;
+    }
+
+    // Salva classificação atual no localStorage
+    async function salvarClassificacao() {
+        const classificacao = await classificacaoAtual(localStorage.getItem("alunoRA"));
+        localStorage.setItem("alunoClassificacao", classificacao);
     }
 
     // Puxa funções após login
@@ -233,7 +212,40 @@ function SistemaAluno() {
         document.body.classList.add("logado");
         campoPesquisa.value = "";
         carregarLivros();
+
+        // Carregar classificação ao entrar na página
+        window.addEventListener("load", () => {
+            salvarClassificacao();
+        });
     }
+
+    // Valida RA
+    async function validarRA(ra) {
+        const res = await fetch('/sistema/validarRA', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ra })
+        });
+        return res.json();   
+    }
+
+    // Mostrar mensagem na tela
+    function mostrarMensagem(texto, tipo) {
+        const msg = document.getElementById("mensagem");
+
+        msg.innerText = texto;
+
+        msg.className = "msg"; // reset
+        msg.classList.add(tipo === "sucesso" ? "msg-sucesso" : "msg-erro");
+
+        msg.style.display = "block";
+
+        // esconder automaticamente após 3s
+        setTimeout(() => {
+            msg.style.display = "none";
+        }, 3000);
+    }
+
 
 
 
