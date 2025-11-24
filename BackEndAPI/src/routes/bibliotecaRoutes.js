@@ -175,7 +175,7 @@ app.post('/bibliotecario/cadastro', async (req, res) => {
       { autoCommit: true }
     );
 
-    res.json({ sucesso: true, mensagem: 'Livro(s) cadastrado(s) com sucesso!' });
+    res.json({ sucesso: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: err.message });
@@ -201,7 +201,9 @@ app.get('/consultar/livros', async (req, res) => {
         ex.COD_EXEMPLAR,
         ex.QUANTIDADE
       FROM LIVROS l
-      JOIN EXEMPLARES ex ON l.COD_LIVRO = ex.CODIGO_LIVRO`
+      JOIN EXEMPLARES ex ON l.COD_LIVRO = ex.CODIGO_LIVRO
+      AND ex.QUANTIDADE > 0
+      `
     );
 
     // Transforma o resultado do Oracle em um array de objetos mais fácil de usar no front
@@ -389,7 +391,7 @@ app.post('/totem/retirada', async (req, res) => {
       { autoCommit: true }
     );
 
-    res.json({ sucesso: true, mensagem: 'Retirada feita com sucesso!' });
+    res.json({ sucesso: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: err.message });
@@ -444,13 +446,193 @@ app.post('/totem/devolucao', async (req, res) => {
       { autoCommit: true }
     );
 
-    res.json({ sucesso: true, mensagem: 'Devolução feita com sucesso!' });
+    res.json({ sucesso: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ erro: err.message });
   } finally {
     if (conn) await conn.close();
   }
+});
+
+app.post('/sistema/classificacaoAtualizada', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { ra } = req.body;
+
+    console.log('Tipo de RA:', typeof ra, ra);
+
+    const livrosLidos = await conn.execute(`
+      SELECT COUNT(*) FROM EMPRESTIMOS
+      WHERE RA_ALUNO = :ra
+      AND DATA_RETIRADA IS NOT NULL
+      AND DATA_DEVOLUCAO IS NOT NULL
+      AND DATA_DEVOLUCAO >= SYSDATE - 180
+      `,
+      { ra },
+      { autoCommit: false }
+    );
+    const quantidadeLivrosLidos = livrosLidos.rows[0][0];
+
+    console.log("Total encontrado:", typeof quantidadeLivrosLidos, quantidadeLivrosLidos);
+
+    let novaClassificacao = '';
+    if (quantidadeLivrosLidos <= 5) {
+      novaClassificacao = 'Iniciante';
+    } else if (quantidadeLivrosLidos > 5 && quantidadeLivrosLidos <= 10) {
+      novaClassificacao = 'Regular';
+    } else if (quantidadeLivrosLidos > 10 && quantidadeLivrosLidos <= 20) {
+      novaClassificacao = 'Ativo(a)';
+    } else {
+      novaClassificacao = 'Extremo(a)';
+    }
+
+    await conn.execute(`
+      UPDATE ALUNOS
+      SET CLASSIFICACOES = :novaClassificacao
+      WHERE REGISTRO = :ra
+      `,
+      { novaClassificacao, ra },
+      { autoCommit: true }
+    );
+
+    res.json({ sucesso: true, mensagem: 'Classificação atualizada com sucesso!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.post('/sistema/classificacaoAtual', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { ra } = req.body;
+
+    const classificacaoAtual = (await conn.execute(`
+      SELECT CLASSIFICACOES FROM ALUNOS
+      WHERE REGISTRO = :ra
+      `,
+      { ra }
+    )).rows[0][0];
+
+    res.json({ sucesso: true, classificacao: classificacaoAtual });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.post('/sistema/validarRA', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { ra } = req.body;
+
+    const result = await conn.execute(`
+      SELECT COUNT(*) FROM ALUNOS 
+      WHERE REGISTRO = :ra
+      `,
+      { ra }
+    )
+
+    if (result.rows[0][0] === 1) {
+        return res.json({ existe: true });
+    } else {
+        return res.json({ existe: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+});
+
+app.post('/sistema/validarCodLivro', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { codlivro } = req.body;
+
+    const result = await conn.execute(`
+      SELECT COUNT(*) FROM EXEMPLARES 
+      WHERE COD_EXEMPLAR = :codlivro
+      `,
+      { codlivro }
+    )
+
+    if (result.rows[0][0] === 1) {
+        return res.json({ existe: true });
+    } else {
+        return res.json({ existe: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+
+});
+
+app.post('/sistema/validarUltimoEmprestimo', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { ra, codlivro } = req.body;
+
+    const result = await conn.execute(`
+      SELECT COUNT(*) FROM EMPRESTIMOS
+      WHERE RA_ALUNO = :ra
+      AND CODIGO_EXEMPLAR = :codlivro
+      AND DATA_DEVOLUCAO IS NULL
+      `,
+      { ra, codlivro }
+    )
+
+    if (result.rows[0][0] === 1) {
+        return res.json({ existe: true });
+    } else {
+        return res.json({ existe: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+
 });
 
 //module.exports = router;

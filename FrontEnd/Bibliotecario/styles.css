@@ -305,3 +305,57 @@ main::before {
     /*box-sizing: border-box; /* padding incluído na largura (não tem padding aqui, mas ok manter) */
     text-align: right; /* alinhado à direita */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Mensagem de sucesso */
+
+.msg {
+    position: fixed; /* fixa na tela */
+    left: 50%; /* centraliza horizontalmente */
+    transform: translateX(-50%); /* ajusta para o centro exato */
+    bottom: 20px; /* distância do fundo */
+    padding: 23px 100px; /* espaçamento interno */
+    font-size: 18px; /* tamanho do texto */
+    font-family: 'IBM Plex Mono', monospace; /* Fonte monoespaçada */
+    /*font-weight: bold;*/ /* negrito (desativado) */   
+    color: white;  /* cor do texto */
+    display: none; /* começa invisível */
+    animation: fadeInOut 3s;  /* animação de fade in e fade out */
+    /*background-color: gray; /* cor de fundo cinza */
+}
+
+.msg-sucesso {
+    background-color: #319949; /* verde */
+}
+
+.msg-erro {
+    background-color: #dc3545; /* vermelho */
+}
+
+@keyframes fadeInOut {
+    0%   { opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { opacity: 0; }
+}
