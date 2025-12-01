@@ -143,6 +143,53 @@ app.post('/bibliotecario/cadastro', async (req, res) => {
     console.log('Tipo de categoria:', typeof bookCategory, bookCategory);
     console.log('Tipo de autor:', typeof bookQuantity, bookQuantity);
 
+    await conn.execute(`
+      MERGE INTO LIVROS t
+      USING (
+        SELECT 
+          :bookName AS NOME,
+          :bookAuthor AS AUTOR,
+          :bookYear AS ANO_PUB,
+          :bookCategory AS CATEGORIA
+        FROM dual
+      ) s
+      ON (t.NOME = s.NOME AND t.AUTOR = s.AUTOR)
+      WHEN MATCHED THEN
+        UPDATE SET
+          t.ANO_PUB = s.ANO_PUB,
+          t.CATEGORIA = s.CATEGORIA
+      WHEN NOT MATCHED THEN
+        INSERT (COD_LIVRO, NOME, AUTOR, ANO_PUB, CATEGORIA)
+        VALUES (SEQ_LIVROS.NEXTVAL, s.NOME, s.AUTOR, s.ANO_PUB, s.CATEGORIA)
+    `,
+    { bookName, bookAuthor, bookYear, bookCategory },
+    { autoCommit: false }
+    );
+
+    const resultId = await conn.execute(`
+      SELECT COD_LIVRO 
+      FROM LIVROS
+      WHERE NOME = :bookName AND AUTOR = :bookAuthor
+    `,
+    { bookName, bookAuthor }
+    );
+    const codLivro = resultId.rows[0][0];
+
+    await conn.execute(`
+      MERGE INTO EXEMPLARES t
+      USING (SELECT :codLivro AS COD_LIVRO FROM dual) s
+      ON (t.CODIGO_LIVRO = s.COD_LIVRO)
+      WHEN MATCHED THEN
+        UPDATE SET t.QUANTIDADE = t.QUANTIDADE + :bookQuantity
+      WHEN NOT MATCHED THEN
+        INSERT (COD_EXEMPLAR, QUANTIDADE, CODIGO_LIVRO)
+        VALUES (SEQ_EXEMPLARES.NEXTVAL, :bookQuantity, s.COD_LIVRO)
+    `,
+    { codLivro, bookQuantity },
+    { autoCommit: true }
+    );
+
+    /*
     await conn.execute(
       `INSERT INTO LIVROS (
         COD_LIVRO, 
@@ -173,7 +220,7 @@ app.post('/bibliotecario/cadastro', async (req, res) => {
       )`,
       { bookQuantity },
       { autoCommit: true }
-    );
+    );*/
 
     res.json({ sucesso: true });
   } catch (err) {
@@ -371,7 +418,7 @@ app.post('/totem/retirada', async (req, res) => {
         SEQ_EMPRESTIMOS.NEXTVAL,
         :ra,
         :codlivro,
-        SYSDATE
+        (SYSTIMESTAMP AT TIME ZONE 'America/Sao_Paulo')
       )`,
       { ra, codlivro },
       { autoCommit: false }
@@ -416,7 +463,7 @@ app.post('/totem/devolucao', async (req, res) => {
 
     await conn.execute(`
       UPDATE EMPRESTIMOS
-      SET DATA_DEVOLUCAO = SYSDATE
+      SET DATA_DEVOLUCAO = (SYSTIMESTAMP AT TIME ZONE 'America/Sao_Paulo')
       WHERE RA_ALUNO = :ra
       AND CODIGO_EXEMPLAR = :codlivro
       AND ID_EMPRESTIMO = (
@@ -473,7 +520,7 @@ app.post('/sistema/classificacaoAtualizada', async (req, res) => {
       WHERE RA_ALUNO = :ra
       AND DATA_RETIRADA IS NOT NULL
       AND DATA_DEVOLUCAO IS NOT NULL
-      AND DATA_DEVOLUCAO >= SYSDATE - 180
+      AND DATA_DEVOLUCAO >= (SYSTIMESTAMP AT TIME ZONE 'America/Sao_Paulo') - 180
       `,
       { ra },
       { autoCommit: false }
@@ -583,6 +630,7 @@ app.post('/sistema/validarCodLivro', async (req, res) => {
     const result = await conn.execute(`
       SELECT COUNT(*) FROM EXEMPLARES 
       WHERE COD_EXEMPLAR = :codlivro
+      AND QUANTIDADE > 0
       `,
       { codlivro }
     )

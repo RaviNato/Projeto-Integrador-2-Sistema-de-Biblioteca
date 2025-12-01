@@ -16,7 +16,7 @@ function Toten() {
             return;
         }
         if (!(await validarCodLivro(codlivro)).existe) {
-            mostrarMensagem("Código do livro inválido ou não cadastrado!", "erro");
+            mostrarMensagem("Código do livro não cadastrado ou não disponível!", "erro");
             return;
         }
         if ((await validarUltimoEmprestimo(ra, codlivro)).existe) {
