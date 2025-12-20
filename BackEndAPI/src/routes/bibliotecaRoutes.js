@@ -574,7 +574,7 @@ app.post('/sistema/classificacaoAtual', async (req, res) => {
       WHERE REGISTRO = :ra
       `,
       { ra }
-    )).rows[0][0];
+    )).rows[0];//[0];
 
     res.json({ sucesso: true, classificacao: classificacaoAtual });
   } catch (err) {
@@ -616,7 +616,7 @@ app.post('/sistema/validarRA', async (req, res) => {
   }
 });
 
-app.post('/sistema/validarCodLivro', async (req, res) => {
+app.post('/sistema/validarCodLivroRetirada', async (req, res) => {
   let conn;
   try {
     conn = await oracledb.getConnection({
@@ -631,6 +631,38 @@ app.post('/sistema/validarCodLivro', async (req, res) => {
       SELECT COUNT(*) FROM EXEMPLARES 
       WHERE COD_EXEMPLAR = :codlivro
       AND QUANTIDADE > 0
+      `,
+      { codlivro }
+    )
+
+    if (result.rows[0][0] === 1) {
+        return res.json({ existe: true });
+    } else {
+        return res.json({ existe: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+
+});
+
+app.post('/sistema/validarCodLivroDevolucao', async (req, res) => {
+  let conn;
+  try {
+    conn = await oracledb.getConnection({
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      connectString: `${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_SID}`
+    });
+
+    const { codlivro } = req.body;
+
+    const result = await conn.execute(`
+      SELECT COUNT(*) FROM EXEMPLARES 
+      WHERE COD_EXEMPLAR = :codlivro
       `,
       { codlivro }
     )

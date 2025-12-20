@@ -15,7 +15,7 @@ function Toten() {
             mostrarMensagem("RA inválido ou não cadastrado!", "erro");
             return;
         }
-        if (!(await validarCodLivro(codlivro)).existe) {
+        if (!(await validarCodLivroRetirada(codlivro)).existe) {
             mostrarMensagem("Código do livro não cadastrado ou não disponível!", "erro");
             return;
         }
@@ -43,7 +43,7 @@ function Toten() {
             mostrarMensagem("RA inválido ou não cadastrado!", "erro");
             return;
         }
-        if (!(await validarCodLivro(codlivro)).existe) {
+        if (!(await validarCodLivroDevolucao(codlivro)).existe) {
             mostrarMensagem("Código do livro inválido ou não cadastrado!", "erro");
             return;
         }
@@ -69,7 +69,7 @@ function Toten() {
     async function atualizarClassificacao() { 
         const ra = document.getElementById("ra").value;
 
-        const res = await fetch('/sistema/classificacao', {
+        const res = await fetch('/sistema/classificacaoAtualizada', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ra })
@@ -77,7 +77,7 @@ function Toten() {
 
 
         const data = await res.json();
-        alert(data.mensagem || data.erro);
+        //alert(data.mensagem || data.erro);
     }
     
     // Valida RA
@@ -90,9 +90,19 @@ function Toten() {
         return res.json();   
     }
 
-    // Valida código do livro
-    async function validarCodLivro(codlivro) {
-        const res = await fetch("/sistema/validarCodLivro", {
+    // Valida código do livro na retirada
+    async function validarCodLivroRetirada(codlivro) {
+        const res = await fetch("/sistema/validarCodLivroRetirada", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ codlivro })
+        });
+        return res.json();   
+    }
+
+    // Valida código do livro na devolução
+    async function validarCodLivroDevolucao(codlivro) {
+        const res = await fetch("/sistema/validarCodLivroDevolucao", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ codlivro })
